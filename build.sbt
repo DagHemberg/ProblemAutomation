@@ -1,11 +1,10 @@
-name := "sbt-problemautomation"
+name := "sbt-ProblemAutomation"
 sbtPlugin := true
 version := "0.1.0-SNAPSHOT"
 
 lazy val root = (project in file("."))
   .settings(
-    name := "sbt-problemautomation",
-    homepage := Some(url("https://github.com/daghemberg/problemautomation")),
+    homepage := Some(url("https://github.com/daghemberg/sbt-problemautomation")),
     licenses := List("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")),
 
     developers := List(
