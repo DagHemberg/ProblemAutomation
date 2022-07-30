@@ -3,13 +3,12 @@ package problemautomation.adventofcode
 import sbt._
 import complete.DefaultParsers._
 import java.time.LocalDate
-import problemautomation.adventofcode.actions._
+import actions._
 
 object Parser {
   type Parser[T] = internal.util.complete.Parser[T] 
 
-  private def flatten(tuple: (Int, (Int, Option[Int]))) = 
-    (tuple._1, tuple._2._1, tuple._2._2)
+  private def flatten(tuple: (Int, (Int, Option[Int]))) = (tuple._1, tuple._2._1, tuple._2._2)
 
   private def currentlySetYear: Option[Int] = None
   private def currentDate = LocalDate.now()
