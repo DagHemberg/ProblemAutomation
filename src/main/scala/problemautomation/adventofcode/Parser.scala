@@ -51,7 +51,7 @@ object Parser {
   lazy val parseNameDayYear = (token(parseName) ~ (Space ~> parseDayYear)) map flatten
   lazy val parsePartDayYear = (token(parsePart) ~ (Space ~> parseDayYear)) map flatten
 
-  lazy val parseName = StringBasic
+  lazy val parseName = StringBasic.examples("\"")
   lazy val parsePart = (token("1") | token("2")) map (_.toInt)
   lazy val parseDayYear = (token(parseDay) ~ (Space ~> parseYear).?)
 
