@@ -77,7 +77,7 @@ object Parser {
   lazy val parseDay = {
     val days = allDays().toSet
     NatBasic
-      .examples(days)
+      .examples(days + "today")
       .filter(
         days.map(_.toInt).contains, 
         day => s"Invalid day '$day'; choose a day between 1 and ${days.max}."
