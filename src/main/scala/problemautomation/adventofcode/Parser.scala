@@ -36,7 +36,7 @@ object Parser {
     }
   }
 
-  lazy val choose: Parser[actions.Action] = Space ~> token(auth | defaultYear | stats | fetch | init | submit)
+  lazy val choose: Parser[actions.Action] = Space ~> (token(auth) | token(defaultYear) | token(stats) | token(fetch) | token(init) | token(submit))
 
   lazy val auth = token("auth") ~> Space ~> (authSet | authGet | authRetry | authReset)
   lazy val defaultYear = token("defaultYear") ~> Space ~> (yearSet | yearGet | yearReset)
