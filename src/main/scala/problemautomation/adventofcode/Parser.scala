@@ -36,24 +36,27 @@ object Parser {
     }
   }
 
-  lazy val choose: Parser[actions.Action] = Space ~> (auth | year | stats | fetch | init | submit)
+  lazy val choose: Parser[actions.Action] = Space ~> (auth | defaultYear | stats | fetch | init | submit)
 
   lazy val auth = token("auth") ~> Space ~> (authSet | authGet | authRetry | authReset)
-  lazy val year = token("year") ~> Space ~> (yearSet | yearGet | yearReset)
+  lazy val defaultYear = token("defaultYear") ~> Space ~> (yearSet | yearGet | yearReset)
   lazy val stats = token("stats") ~> Space ~> (statsGet | statsToggle)
 
   lazy val fetch = token("fetch") ~> Space ~> dayYear map Fetch.tupled
   lazy val init = token("init") ~> Space ~> nameDayYear map Init.tupled
   lazy val submit = token("submit") ~> Space ~> partDayYear map Submit.tupled
 
-  lazy val nameDayYear = (token(parseName) ~ (Space ~> dayYear)) map flatten
-  lazy val partDayYear = (token(parsePart) ~ (Space ~> dayYear)) map flatten
+  def appendDayYearTo[A](parser: Parser[A]) = 
+    (token(parser) ~ (Space ~> dayYear)) map flatten
+  
+  lazy val nameDayYear = appendDayYearTo(parseName)
+  lazy val partDayYear = appendDayYearTo(parsePart)
   lazy val dayYear = today | explicitDayYear
 
   lazy val parseName = StringBasic.examples("\"")
   lazy val parsePart = (token("1") | token("2")) map (_.toInt)
 
-  lazy val explicitDayYear = (token(parseDay) ~ (Space ~> parseYear).?)  
+  lazy val explicitDayYear = token(parseDay) ~ (Space ~> parseYear).?
   lazy val today: Parser[(Int, Option[Int])] = 
     token("today")
       .map(_ => currentDate)
