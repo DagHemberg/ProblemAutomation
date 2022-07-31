@@ -8,7 +8,7 @@ import actions._
 object Parser {
   type Parser[T] = internal.util.complete.Parser[T] 
 
-  private def flatten(tuple: (Int, (Int, Option[Int]))) = (tuple._1, tuple._2._1, tuple._2._2)
+  private def flatten[A](tuple: (A, (Int, Option[Int]))) = (tuple._1, tuple._2._1, tuple._2._2)
 
   private def currentlySetYear: Option[Int] = None
   private def currentDate = LocalDate.now()
@@ -36,7 +36,7 @@ object Parser {
     }
   }
 
-  lazy val choose: Parser[actions.Action] = (test | auth | year | stats | fetch | init | submit)
+  lazy val choose: Parser[actions.Action] = Space ~> (auth | year | stats | fetch | init | submit)
 
   lazy val auth = token("auth") ~> Space ~> (authSet | authGet | authRetry | authReset)
   lazy val year = token("year") ~> Space ~> (yearSet | yearGet | yearReset)
@@ -44,17 +44,25 @@ object Parser {
   lazy val fetch = token("fetch") ~> Space ~> (parseFetch /* | today */)
   lazy val init = token("init") ~> Space ~> (parseInit /* | today */)
   lazy val submit = token("submit") ~> Space ~> parsePartDayYear map Submit.tupled
-  lazy val test = token("test") ^^^ Test
 
   lazy val parseFetch = parseDayYear map Fetch.tupled
-  lazy val parseInit = parseDayYear map Init.tupled
+  lazy val parseInit = parseNameDayYear map Init.tupled
 
+  lazy val parseNameDayYear = (token(parseName) ~ (Space ~> parseDayYear)) map flatten
   lazy val parsePartDayYear = (token(parsePart) ~ (Space ~> parseDayYear)) map flatten
+
+  lazy val parseName = StringBasic
+  lazy val parsePart = (token("1") | token("2")) map (_.toInt)
   lazy val parseDayYear = (token(parseDay) ~ (Space ~> parseYear).?)
 
-  lazy val parsePart = (token("1") | token("2")) map (_.toInt)
+  lazy val fetchToday = attemptToday
+  lazy val initToday = attemptToday
 
-  // lazy val today = token("today") ^^^ Fetch(currentDate.getDayOfMonth, Some(currentDate.getYear))
+  lazy val attemptToday = {
+    val today = currentDate
+    if (today.getMonthValue == 12 && today.getDayOfMonth <= 25) (today.getMonth, Some(today.getYear))
+    else failure("No problem was posted today")
+  }
 
   lazy val parseDay = {
     val days = allDays().toSet
