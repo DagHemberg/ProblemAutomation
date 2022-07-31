@@ -6,7 +6,6 @@ lazy val root = (project in file("."))
   .settings(
     homepage := Some(url("https://github.com/daghemberg/sbt-problemautomation")),
     licenses := List("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")),
-
     developers := List(
       Developer(
         "DagHemberg",

@@ -36,7 +36,7 @@ object Parser {
     }
   }
 
-  lazy val choose: Parser[actions.Action] = Space ~> (auth | year | stats | fetch | init | submit)
+  lazy val choose: Parser[actions.Action] = (auth | year | stats | fetch | init | submit)
 
   lazy val auth = token("auth") ~> Space ~> (authSet | authGet | authRetry | authReset)
   lazy val year = token("year") ~> Space ~> (yearSet | yearGet | yearReset)
@@ -52,6 +52,8 @@ object Parser {
   lazy val parseDayYear = (token(parseDay) ~ (Space ~> parseYear).?)
 
   lazy val parsePart = (token("1") | token("2")) map (_.toInt)
+
+  // lazy val today = token("today") ^^^ Fetch(currentDate.getDayOfMonth, Some(currentDate.getYear))
 
   lazy val parseDay = {
     val days = allDays().toSet
@@ -71,8 +73,6 @@ object Parser {
         year => s"Invalid year '$year'; choose a year between ${allYears.min} and ${allYears.max}."
       )
   }
-
-  // lazy val today = token("today") ^^^ Fetch(currentDate.getDayOfMonth, Some(currentDate.getYear))
 
   lazy val authSet = token("set") ~> Space ~> StringBasic.examples("") map Auth.Set
   lazy val authGet = token("get") ^^^ Auth.Get
