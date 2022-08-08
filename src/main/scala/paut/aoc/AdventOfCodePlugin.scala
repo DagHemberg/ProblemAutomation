@@ -1,4 +1,4 @@
-package problemautomation.adventofcode
+package paut.aoc
 
 import sbt._
 import sbt.Keys._
@@ -15,12 +15,8 @@ object AdventOfCodePlugin extends AutoPlugin {
 
   override lazy val projectSettings = Seq(
     aoc := {
-      val action = Parser.choose.parsed
+      val action = Parse.choose.parsed
       println(action)
     }
   )
-
-  override lazy val buildSettings = Nil
-
-  override lazy val globalSettings = Nil
 }
