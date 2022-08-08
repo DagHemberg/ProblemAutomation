@@ -6,6 +6,8 @@ import java.time.LocalDate
 import util.chaining._
 
 object Results {
+  val alreadySubmittedMsg = "This solution has already been submitted and been verified to be correct."
+
   private def all = Files.read(Files.resultsFile).map(_.split("\n").toList).getOrElse(Nil)
 
   case object GetAll extends Action {
