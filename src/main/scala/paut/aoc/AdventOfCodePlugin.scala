@@ -16,7 +16,7 @@ object AdventOfCodePlugin extends AutoPlugin {
   override lazy val projectSettings = Seq(
     aoc := {
       val action = Parse.choose.parsed
-      println(action)
+      action.execute
     }
   )
 }
