@@ -27,7 +27,6 @@ object Date {
       2015 to today.getYear
   }
 
-  def availableDays = {
+  def availableDays = 
     1 to (if (today.getMonthValue != 12) 25 else today.getDayOfMonth)
-  }
 }
