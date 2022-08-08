@@ -8,9 +8,9 @@ case class Result(
     year: Int,
     day: Int,
     part: Int,
-    timestamp: LocalDateTime,
     solution: String,
     time: Double,
+    timestamp: LocalDateTime,
     submitted: Boolean
 ) {
   override def toString = {
@@ -25,7 +25,7 @@ case class Result(
         |$sol
         |$stat""".stripMargin
   }
-  def raw = s"$year;$day;$part;$timestamp;$solution;$time;$submitted"
+  def raw = s"$year;$day;$part;$solution;$time;$timestamp;$submitted"
 }
 
 object Result {
@@ -33,13 +33,13 @@ object Result {
     val parts = str.split(";").toList
     require(parts.length == 7, "Invalid format")
     Result(
-      parts(0).toInt,
-      parts(1).toInt,
-      parts(2).toInt,
-      LocalDateTime.parse(parts(3), DateTimeFormatter.ISO_DATE_TIME),
-      parts(4),
-      parts(5).toDouble,
-      parts(6).toBoolean
+      year = parts(0).toInt,
+      day = parts(1).toInt,
+      part = parts(2).toInt,
+      solution = parts(3),
+      time = parts(4).toDouble,
+      timestamp = LocalDateTime.parse(parts(5), DateTimeFormatter.ISO_DATE_TIME),
+      submitted = parts(6).toBoolean
     )
   }
 }
