@@ -17,7 +17,7 @@ object Auth {
       info("Attempting to connect to Advent of Code servers...")
       
       os.write.over(tokenFile, sessionToken, createFolders = true)
-      val response = API.get(API.baseUrl)
+      val response = AdventAPI.get(AdventAPI.baseUrl)
       if (response.isLeft) os.remove(tokenFile)
 
       Logging.fromEither(response) { doc =>

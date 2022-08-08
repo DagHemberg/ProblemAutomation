@@ -19,7 +19,7 @@ object Data {
           Left("Input data for this day already exists.")
         else {
           Logging.info(s"Fetching data for $year, day $day...")
-          API.get(API.url(year, day, "input"))
+          AdventAPI.get(AdventAPI.url(year, day, "input"))
         }
       }
       
