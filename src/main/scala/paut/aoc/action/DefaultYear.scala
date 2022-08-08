@@ -4,14 +4,11 @@ import paut.aoc._
 import paut.utils.Logging
 
 object Year {
-  def getDefault = Files.read(Files.defaultYearFile).map(_.toInt)
+  def default = Files.read(Files.defaultYearFile).map(_.toInt)
   
   case object GetDefault extends Action {
     def execute = Logging.info(s"Default year: ${
-      getDefault match {
-        case None => s"${Date.availableYears.max} (dynamic)"
-        case Some(year) => year
-      }
+      default.getOrElse(s"${Date.availableYears.max} (dynamic)")
     }")
   }
 
