@@ -10,7 +10,7 @@ import action._
 object Parse {
   lazy val choose: Parser[Action] = Space ~> (settings | results | files)
 
-  lazy val settings = token("settings") ~> (auth | defaultYear)
+  lazy val settings = token("settings") ~> Space ~> (auth | defaultYear)
   lazy val files = token("files") ~> Space ~> (initProblem | openExample | addExample | openDataFolder)
   lazy val results = token("results") ~> Space ~> (resultsGetAll | resultsGetOne | submit)
 
@@ -56,7 +56,7 @@ object Parse {
   }
 
   lazy val parseYear = {
-    val allYears = Date.availableDays.map(_.toString).toSet
+    val allYears = Date.availableYears.map(_.toString).toSet
     NatBasic
       .examples(allYears)
       .filter(
