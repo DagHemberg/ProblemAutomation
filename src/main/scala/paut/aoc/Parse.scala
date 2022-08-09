@@ -18,7 +18,7 @@ object Parse {
   lazy val defaultYear = token("defaultYear") ~> Space ~> (yearSet | yearGet | yearReset)
 
   lazy val initProblem = token("initProblem") ~> Space ~> nameDayYear map InitProblemFiles.tupled
-  lazy val openExample = token("openExample") ~> Space ~> numberDayYear map Data.OpenExample.tupled
+  lazy val openExample = token("openExample") ~> Space ~> partDayYear map Data.OpenExample.tupled
   lazy val addExample = token("addExample") ~> Space ~> dayYear map Data.AddExample
   lazy val openDataFolder = token("openDataFolder") ^^^ Data.OpenFolder
 
@@ -27,12 +27,10 @@ object Parse {
   lazy val resultsGetOne = token("get") ~> Space ~> partDayYear map Results.GetOne.tupled
 
   lazy val nameDayYear = parseName ~ (Space ~> dayYear)
-  lazy val numberDayYear = parseNumber ~ (Space ~> dayYear)
   lazy val partDayYear = parsePart ~ (Space ~> dayYear)
   lazy val dayYear = today | explicitDayYear
 
   lazy val parseName = StringBasic.examples("\"")
-  lazy val parseNumber = IntBasic.examples("")
   lazy val parsePart = (token("1") | token("2")) map (_.toInt)
 
   lazy val explicitDayYear = (token(parseDay) ~ (Space ~> parseYear).?) map (Date.from _).tupled
