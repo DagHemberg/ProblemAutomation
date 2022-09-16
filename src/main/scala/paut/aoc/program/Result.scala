@@ -1,4 +1,4 @@
-package paut.aoc
+package paut.aoc.program
 
 import java.time.{LocalDate, LocalDateTime}
 import java.time.format.DateTimeFormatter

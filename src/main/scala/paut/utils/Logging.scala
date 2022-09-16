@@ -50,7 +50,6 @@ object Logging {
     * 
     * This is equivalent to:
     * ```
-    * val msg = /** ... */ ???
     * option match {
     *   case None => Logging.error(msg)
     *   case Some(x) => f(x)
@@ -72,7 +71,6 @@ object Logging {
     * 
     * This is equivalent to:
     * ```
-    * val msg = /* ... */ ???
     * if (bool) block
     * else Logging.error(msg)
     * ```

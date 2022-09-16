@@ -20,9 +20,9 @@ abstract class Request {
       .userAgent(auth.userAgent)
     }
 
-  private def attempt(url: String, auth: Authentication)(f: Connection => Document) = {
+  private def attempt(url: String, auth: Authentication)(exec: Connection => Document) = {
     connect(url, auth) flatMap { connection =>
-      Try(f(connection)) match {
+      Try(exec(connection)) match {
         case Success(doc) => Right(doc)
         case Failure(http: HttpStatusException) => 
           if (http.getStatusCode == 404) Left(notFoundMsg)

@@ -3,6 +3,7 @@ import java.util.GregorianCalendar
 import java.util.TimeZone
 import java.time.LocalDate
 
+/** A trait that can be extended by Actions in order to provide easy access to the current date and year */
 trait Date {
   val date: LocalDate
   val day = date.getDayOfMonth
@@ -10,6 +11,8 @@ trait Date {
   val year = date.getYear
 }
 
+/** Companion object for Date trait. Contains useful functions for getting the current dates and available years and dates within a year. 
+ */
 object Date {  
   def from(day: Int, year: Option[Int] = None) = 
     LocalDate.of(year.getOrElse(availableYears.max), 12, day)

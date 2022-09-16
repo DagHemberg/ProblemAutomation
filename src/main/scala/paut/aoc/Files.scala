@@ -2,9 +2,11 @@ package paut.aoc
 
 import os.Path
 import paut.utils.Authentication
-import org.jsoup.Jsoup
 
+/** Object that provides quick access to various files and folders. */
 object Files {
+
+  // general file structure
   val wd = os.home / ".paut" / "aoc"
     val inputs = wd / "inputs"
       val examples = inputs / "examples"

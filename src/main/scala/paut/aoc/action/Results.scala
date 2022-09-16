@@ -1,6 +1,6 @@
 package paut.aoc.action
 
-import paut.aoc._
+import paut.aoc._, program._
 import paut.utils.Logging
 import java.time.LocalDate
 import util.chaining._
@@ -19,7 +19,7 @@ object Results {
       Logging.fromOption(get, s"No result for part $part on year $year, day $day")(println)
     
     def get: Option[Result] = {
-      all.tap(_.foreach(println)) find { _ startsWith s"$year;$day;$part" } map Result.parse
+      all find { _ startsWith s"$year;$day;$part" } map Result.parse
     }
   }
 }
