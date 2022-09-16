@@ -37,7 +37,7 @@ case class InitProblemFiles(name: String, date: LocalDate) extends Action with D
 
   private def write(file: os.Path, content: String) = {
     val msg = s"File $file already exists, skipping..."
-    Logging.fromBoolean(os.exists(file), msg) {
+    Logging.fromBoolean(!os.exists(file), msg) {
       os.write.over(file, content, createFolders = true)
       Logging.info(s"Created file $file")
     }
