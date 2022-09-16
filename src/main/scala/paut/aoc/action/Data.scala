@@ -43,9 +43,11 @@ object Data {
 
   case class AddExample(date: LocalDate) extends Action with Date {
     def execute = {
+      val yearPath = Files.examples / year.toString
+      if (!os.exists(yearPath)) os.makeDir.all(yearPath)
       val extract = raw"$formattedDay-(\d+)".r
       val parts = os
-        .list(Files.examples / year.toString)
+        .list(yearPath)
         .map(_.baseName)
         .collect { case extract(part) => part.toInt }
       val newest = LazyList.from(1).filterNot(parts.contains).head
