@@ -1,5 +1,8 @@
 package pautplugin.aoc
 
+import os.Path
+import pautplugin.utils.Authentication
+
 /** Object that provides quick access to various files and folders. */
 object Files {
 
