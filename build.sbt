@@ -1,0 +1,34 @@
+lazy val githubURL = url("https://github.com/daghemberg/sbt-pAut")
+
+name := "sbt-pAut"
+
+ThisBuild / libraryDependencies += "com.lihaoyi" %% "os-lib" % "0.8.1"
+ThisBuild / organization := "org.daghe"
+ThisBuild / licenses := List("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0"))
+ThisBuild / homepage := Some(githubURL)
+ThisBuild / developers := List(
+  Developer(
+    "DagHemberg",
+    "Dag Hemberg",
+    "dag.hemberg@gmail.com",
+    githubURL
+  )
+)
+
+lazy val program = project
+  .in(file("program"))
+  .settings(
+    name := "pAut-program",
+    scalaVersion := "2.12.16",
+  )
+
+lazy val plugin = project
+  .in(file("plugin"))
+  .dependsOn(program)
+  .settings(
+    sbtPlugin := true,
+    name := "sbt-pAut-plugin",
+    libraryDependencies ++= Seq(
+      "com.softwaremill.sttp.client3" %% "core" % "3.8.0",
+    )
+  )
