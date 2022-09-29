@@ -6,6 +6,7 @@ ThisBuild / libraryDependencies += "com.lihaoyi" %% "os-lib" % "0.8.1"
 ThisBuild / organization := "org.daghe"
 ThisBuild / licenses := List("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0"))
 ThisBuild / homepage := Some(githubURL)
+ThisBuild / crossScalaVersions := List("2.12.16", "2.13.7", "3.2.0")
 ThisBuild / developers := List(
   Developer(
     "DagHemberg",
