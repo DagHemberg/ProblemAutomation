@@ -1,6 +1,6 @@
 package paut.aoc
 
-sealed trait Example[A] { val solution: A }
+trait Example[A] { val solution: A }
 
 case object Skip extends Example[Any] { val solution = None }
 case class PrimaryEx[A](solution: A) extends Example[A]
