@@ -20,7 +20,7 @@ object Results {
       Logging.fromOption(get, s"No result for part $part on year $year, day $day")(println)
     
     def get: Option[Result] = {
-      all find { _ startsWith s"$year;$day;$part" } map Result.parse
+      all find { _ startsWith s"$year;$day;$part" } map (x => Result.parse(x.trim))
     }
   }
 }
