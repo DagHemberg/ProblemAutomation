@@ -20,6 +20,7 @@ lazy val program = project
   .in(file("program"))
   .settings(
     name := "pAut-program",
+    console / initialCommands := "import paut.aoc._",
     scalaVersion := "2.12.16",
   )
 
@@ -27,8 +28,9 @@ lazy val plugin = project
   .in(file("plugin"))
   .dependsOn(program)
   .settings(
-    sbtPlugin := true,
     name := "sbt-pAut-plugin",
+    sbtPlugin := true,
+    console / initialCommands := "import pautplugin._, aoc._, utils._, action._",
     libraryDependencies ++= Seq(
       "com.softwaremill.sttp.client3" %% "core" % "3.8.0",
     )
