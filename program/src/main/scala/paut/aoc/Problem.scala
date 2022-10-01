@@ -67,9 +67,9 @@ abstract class Problem[A]
   private def readFile(folder: String, year: Int, file: String) = {
     Try(os.read.lines(resources / "input" / folder / year.toString / file).toList) match {
       case Success(lines) => Some(lines)
-      case Failure(e) => {
+      case Failure(err) => {
         printlln(s"""|${error(s"when reading $file in $folder/$year")}:
-                     |    ${e}""".stripMargin)(true)
+                     |    ${err}""".stripMargin)(true)
         None
       }
     }
@@ -77,21 +77,24 @@ abstract class Problem[A]
 
   private def writeResult(eval: TimedEval[A])(implicit printresult: Boolean): Unit = {
     val resultsFile = os.home / ".paut" / "aoc" / "results.txt"
-    def read(path: os.Path) = if (os.exists(path)) Some(os.read(path)) else None
+    val newRes = Result(year, day, part, eval.result.toString, eval.duration)
+    val now = java.time.LocalDateTime.now()
 
-    val newRes = 
-      Result(year, day, part, eval.result.toString, eval.duration, java.time.LocalDateTime.now(), false)
+    if (!os.exists(resultsFile)) os.write(resultsFile, "", createFolders = true)
 
-    read(resultsFile)
-      .map(_.split("\n").toList)
-      .getOrElse(Nil)
+    os.read.lines(resultsFile)
+      .toList
       .find(_.startsWith(s"$year;$day;$part"))
-      .map(Result.parse) match {
+      .map(str => Result.parse(str.trim)) match {
         case None => os.write.append(resultsFile, newRes.raw)
-        case Some(res) => {
-          if (res.submitted && res.solution == eval.result.toString && res.time > eval.duration) {
-            os.write.over(resultsFile, os.read(resultsFile).replace(res.raw, newRes.raw))
-          } 
+        case Some(result) => {
+          os.write.over(resultsFile, os.read(resultsFile).replace(result.raw, 
+            if (result.submitted && result.solution == eval.result.toString && result.time > eval.duration) {
+              result.copy(timestamp = now, time = eval.duration).raw
+            } else {
+              newRes.raw
+            }
+          ))
         }
       }
   }
@@ -129,16 +132,15 @@ abstract class Problem[A]
     }
 
     val result = example match {
-      case _: Skip.type => {        
+      case skip: Skip.type => {
         printlln(info("No example provided, evaluating puzzle input..."))
         solvePuzzle
       }
-      case sol => {
+      case ex => {
         printlln(info("Evaluating example input..."))
-        val (exampleInput, solution) = sol match {
-          case primary: PrimaryEx[A] => (primaryExampleInput, primary.solution)
-          case secondary: SecondaryEx[A] => (secondaryExampleInput, secondary.solution)
-          case skip: Skip.type => ??? // should never happen
+        val (exampleInput, solution) = ex match {
+          case PrimaryEx(solution) => (primaryExampleInput, solution)
+          case SecondaryEx(solution) => (secondaryExampleInput, solution)
         }
         solveExample(exampleInput, solution).flatMap(_ => solvePuzzle)
       }

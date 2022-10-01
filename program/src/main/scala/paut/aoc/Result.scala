@@ -10,21 +10,24 @@ case class Result(
     part: Int,
     solution: String,
     time: Double,
-    timestamp: LocalDateTime,
-    submitted: Boolean
+    timestamp: LocalDateTime = LocalDateTime.now(),
+    submitted: Boolean = false
 ) {
   override def toString = {
     val from = s"AoC $year day $day - Part $part"
     val latest = s"Latest run: ${timestamp.format(DateTimeFormatter.ISO_DATE_TIME)}"
-    val dur = s"Duration: ${(f"${YELLOW}${time}%.5fs${RESET}")}"
+    val dur = s"Fastest run: ${(f"${YELLOW}${time}%.5fs${RESET}")}"
     val sol = s"Solution: $solution"
     val stat = s"Status: ${if (submitted) s"${GREEN}Submitted${RESET}" else s"${RED}Not submitted${RESET}"}"
+    
     s"""|--- $from ---
         |$latest
         |$dur
         |$sol
-        |$stat""".stripMargin
+        |$stat
+        |""".stripMargin
   }
+
   def raw = s"$year;$day;$part;$solution;$time;$timestamp;$submitted"
 }
 
