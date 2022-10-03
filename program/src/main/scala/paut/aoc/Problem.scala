@@ -76,7 +76,7 @@ abstract class Problem[A]
   }
 
   private def writeResult(eval: TimedEval[A])(implicit printresult: Boolean): Unit = {
-    val resultsFile = os.home / ".paut" / "aoc" / "results.txt"
+    val resultsFile = os.home / ".paut" / "aoc" / "results.csv"
     val newRes = Result(year, day, part, eval.result.toString, eval.duration)
     val now = java.time.LocalDateTime.now()
 

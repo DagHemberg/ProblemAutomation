@@ -15,7 +15,7 @@ object Files {
       val tokenFile = conf / "session.txt"
       val usernameFile = conf / "user.txt"
       val defaultYearFile = conf / "defaultyear.txt"
-    val resultsFile = wd / "results.txt"
+    val resultsFile = wd / "results.csv"
 
   def read(path: os.Path) = if (os.exists(path)) Some(os.read(path)) else None
 
