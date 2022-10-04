@@ -36,7 +36,7 @@ abstract class Problem[A]
     s"""|[${RED}!${RESET}] ${e.getClass.getSimpleName}: ${e.getMessage}
         |${e.getStackTrace.toList
             .dropWhile(!_.toString.startsWith("aoc"))
-            .takeWhile(!_.toString.startsWith("utils.Problem"))
+            .takeWhile(!_.toString.startsWith("paut.aoc.Problem"))
             .init
             .map(s => s"      $s")
             .mkString("\n")}""".stripMargin
@@ -82,19 +82,21 @@ abstract class Problem[A]
 
     if (!os.exists(resultsFile)) os.write(resultsFile, "", createFolders = true)
 
-    os.read.lines(resultsFile)
-      .toList
+    os.read.lines(resultsFile).toList
       .find(_.startsWith(s"$year;$day;$part"))
       .map(str => Result.parse(str.trim)) match {
         case None => os.write.append(resultsFile, newRes.raw)
         case Some(result) => {
-          os.write.over(resultsFile, os.read(resultsFile).replace(result.raw, 
-            if (result.submitted && result.solution == eval.result.toString && result.time > eval.duration) {
-              result.copy(timestamp = now, time = eval.duration).raw
-            } else {
-              newRes.raw
-            }
-          ))
+          os.write.over(
+            resultsFile, 
+            os.read(resultsFile).replace(result.raw, 
+              if (result.submitted && result.solution == eval.result.toString && result.time > eval.duration) {
+                result.copy(timestamp = now, time = eval.duration).raw
+              } else {
+                newRes.raw
+              }
+            )
+          )
         }
       }
   }
