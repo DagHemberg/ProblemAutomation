@@ -5,7 +5,7 @@ import java.time.LocalDate
 import pautplugin.utils.Logging
 
 case class InitProblemFiles(name: String, date: LocalDate) extends Action with Date {
-  private val aoc = os.pwd / "src" / "main" / "aoc"
+  private val aoc = os.pwd / "src" / "main" / "scala" / "aoc"
   private val packages = s"package aoc.y$year.day$formattedDay"
   private val imports = "import problemutils.*, extensions.*"
 
@@ -14,7 +14,7 @@ case class InitProblemFiles(name: String, date: LocalDate) extends Action with D
        |import paut.aoc.*
        |$imports
        |
-       |object Part$part extends Problem("$year", "$formattedDay", "$part")(Primary(???)):
+       |object Part$part extends Problem($year, $day, $part)(PrimaryEx(???)):
        |  def name = "$name - Part $part"
        |  def solve(data: List[String]) = ???
        |""".stripMargin
@@ -27,9 +27,8 @@ case class InitProblemFiles(name: String, date: LocalDate) extends Action with D
        |""".stripMargin
   
   private val testing = 
-   s"""|$packages
+   s"""|$imports
        |import paut.aoc.Testing.read
-       |$imports
        |
        |val primaryExampleData = read("examples", "$year", "$formattedDay-1")
        |val puzzleData = read("puzzles", "$year", "$formattedDay")
