@@ -11,6 +11,7 @@ case class InitProblemFiles(name: String, date: LocalDate) extends Action with D
 
   private def problem(part: Int) = 
    s"""|$packages
+       |import paut.aoc.*
        |$imports
        |
        |object Part$part extends Problem("$year", "$formattedDay", "$part")(Primary(???)):
@@ -27,12 +28,12 @@ case class InitProblemFiles(name: String, date: LocalDate) extends Action with D
   
   private val testing = 
    s"""|$packages
+       |import paut.aoc.Testing.read
        |$imports
-       |import Testing.*
        |
-       |val primaryExample = read("examples", "$year", "$formattedDay-1")
+       |val primaryExampleData = read("examples", "$year", "$formattedDay-1")
        |val puzzleData = read("puzzles", "$year", "$formattedDay")
-       |val data = primaryExample
+       |val data = primaryExampleData
        |""".stripMargin
 
   private def write(file: os.Path, content: String) = {

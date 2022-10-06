@@ -26,3 +26,9 @@ object TimedEval {
     t.result
   }
 }
+
+object Testing {
+  def read(folder: String, year: String, day: String) = {
+    os.read.lines(os.home / ".paut" / "aoc" / "inputs" / folder / year / s"$day.txt").toList
+  }
+}
