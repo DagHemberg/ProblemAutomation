@@ -10,7 +10,7 @@ import java.time.LocalDate
 import action._
 
 object Parse {
-  lazy val choose: Parser[Action] = Space ~> (settings | results | files).examples("settings", "results", "files")
+  lazy val choose: Parser[Action] = Space ~> (settings | results | files)
 
   lazy val settings = token("settings") ~> Space ~> (auth | defaultYear)
   lazy val files = token("files") ~> Space ~> (initProblem | openExample | addExample | openDataFolder)
