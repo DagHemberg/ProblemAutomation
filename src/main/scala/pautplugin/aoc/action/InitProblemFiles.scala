@@ -1,10 +1,11 @@
 package pautplugin.aoc.action
 
 import pautplugin.aoc._
-import java.time.LocalDate
 import pautplugin.utils.Logging
 
-case class InitProblemFiles(name: String, date: LocalDate) extends Action with Date {
+import java.time.LocalDate
+
+case class InitProblemFiles(name: String, date: LocalDate) extends Action with Date with AdventAuth {
   private val aoc = os.pwd / "src" / "main" / "scala" / "aoc"
   private val packages = s"package aoc.y$year.day$formattedDay"
   private val imports = "import problemutils.*, extensions.*"
@@ -14,7 +15,7 @@ case class InitProblemFiles(name: String, date: LocalDate) extends Action with D
        |import paut.aoc.*
        |$imports
        |
-       |object Part$part extends Problem($year, $day, $part)(PrimaryEx(???)):
+       |object Part$part extends Problem($year, $day)($part)(???):
        |  def name = "$name - Part $part"
        |  def solve(data: List[String]) = ???
        |""".stripMargin
@@ -51,11 +52,13 @@ case class InitProblemFiles(name: String, date: LocalDate) extends Action with D
   private def writeTesting = write(folder / "testing.worksheet.sc", testing)
   
   def execute = {
-    writePackage
-    writeProblem(1)
-    writeProblem(2)
-    writeTesting
-    Data.Fetch(date).execute
-    Data.AddExample(date).execute
+    Logging.fromEither(tokenValue) { _ =>
+      writePackage
+      writeProblem(1)
+      writeProblem(2)
+      writeTesting
+      Data.Fetch(date).execute
+      Data.AddExample(date).execute
+    }
   }
 }
