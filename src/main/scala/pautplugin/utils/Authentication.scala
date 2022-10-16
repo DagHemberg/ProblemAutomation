@@ -9,7 +9,7 @@ package pautplugin.utils
 trait Authentication {
   implicit val auth = this
 
-  def tokenValue: Option[String]
+  def tokenValue: Either[String, String]
   val tokenName: String
   val userAgent: String
   val tokenMissingMsg: String

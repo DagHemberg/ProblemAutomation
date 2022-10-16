@@ -1,8 +1,9 @@
 package pautplugin.aoc.action
 
-import java.time.LocalDate
 import pautplugin.aoc._
 import pautplugin.utils._
+
+import java.time.LocalDate
 import scala.collection.compat.immutable.LazyList
 
 object Data {
@@ -11,20 +12,19 @@ object Data {
   }
 
   case class Fetch(date: LocalDate) extends Action with Date with AdventAuth {  
-    private val puzzle = Files.puzzles / year.toString / s"$day.txt"
+    private val puzzleFile = Files.puzzles / year.toString / s"$day.txt"
   
     def execute: Unit = {
       val response = {
-        if (os.exists(puzzle))
-          Left("Input data for this day already exists.")
+        if (os.exists(puzzleFile)) Left("Input data for this day already exists.")
         else {
           Logging.info(s"Fetching data for $year, day $day...")
-          AdventAPI.get(AdventAPI.url(year, day, "input"))
+          Request.get(problemUrl(year, day, "input"))
         }
       }
       
       Logging.fromEither(response) { data =>
-        os.write.over(puzzle, data, createFolders = true)
+        os.write.over(puzzleFile, data, createFolders = true)
       }
     }
   }

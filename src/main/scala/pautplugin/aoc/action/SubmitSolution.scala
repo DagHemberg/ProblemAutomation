@@ -1,9 +1,12 @@
 package pautplugin.aoc.action
 
-import java.time.LocalDate
-import sys.process._
-import pautplugin.utils._, Logging._
 import pautplugin.aoc._
+import pautplugin.utils._
+
+import java.time.LocalDate
+
+import sys.process._
+import Logging._
 
 case class SubmitSolution(part: Int, date: LocalDate) extends Action with Date with AdventAuth {
   private val notCorrectMsg = "That's not the correct answer."
@@ -19,19 +22,15 @@ case class SubmitSolution(part: Int, date: LocalDate) extends Action with Date w
     error(s"Please wait $time before submitting another answer.")
   }
 
-  private def post = 
-    Results.GetOne(part, date)
-      .get
-      .toRight(s"No result found for $year day $day, part $part")
-      .flatMap { res => 
-        if (res.submitted) Left(Results.alreadySubmittedMsg)
-        else {
-          AdventAPI.post(
-            data = Map("level" -> part.toString, "answer" -> res.solution),
-            url = AdventAPI.url(date.getYear, date.getDayOfMonth, "answer"), 
-          )
-        }
-      }
+  private def post = Results.GetOne(part, date)
+    .getResult
+    .flatMap { res => 
+      if (res.submitted) Left(Results.alreadySubmittedMsg)
+      else Request.post(
+        data = Map("level" -> part.toString, "answer" -> res.solution),
+        url = problemUrl(date.getYear, date.getDayOfMonth, "answer"), 
+      )
+    }
 
   def execute = Logging.fromEither(post) { text =>
     if (text.contains("too recently")) {
@@ -49,11 +48,11 @@ case class SubmitSolution(part: Int, date: LocalDate) extends Action with Date w
     // shouldn't really be needed, but adding just in case
     else if (text.contains("You don't seem to be solving the right level")) {
       error("You don't seem to be solving the right level. Either you don't have access to this problem yet or you've already solved it.")
-    } 
+    }
 
     else if (text.contains("That's the right answer")) {
-      val url = s"${AdventAPI.baseUrl}/$year/day/${if (part == 1) s"$day#part2" else s"${day + 1}"}"
-      val res = Results.GetOne(part, date).get.get
+      val url = s"$baseUrl/$year/day/${if (part == 1) s"$day#part2" else s"${day + 1}"}"
+      val res = Results.GetOne(part, date).getResult.toOption.get
       val newRes = os.read(Files.resultsFile).replace(res.raw, res.copy(submitted = true).raw)
       os.write.over(Files.resultsFile, newRes)
       success(s"${yellow("Correct")} answer!")

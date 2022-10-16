@@ -1,13 +1,18 @@
 package pautplugin.aoc.action
 
 import pautplugin.aoc._
-import pautplugin.utils._, Logging._
-import scala.util.{Try, Success, Failure}
+import pautplugin.utils._
+
+import scala.util.Failure
+import scala.util.Success
+import scala.util.Try
+
+import Logging._
 import Files._
 
 object Auth {
   case object GetSession extends Action with AdventAuth {
-    def execute = Logging.fromOption(tokenValue, tokenMissingMsg) { token => 
+    def execute = Logging.fromEither(tokenValue) { token => 
       info(s"Currently authenticated as: ${yellow(username getOrElse "<no username found>")}")
     }
   }
@@ -17,13 +22,12 @@ object Auth {
       info("Attempting to connect to Advent of Code servers...")
       
       os.write.over(tokenFile, sessionToken, createFolders = true)
-      val response = AdventAPI.get(AdventAPI.baseUrl)
+      val response = Request.get(baseUrl)
       if (response.isLeft) os.remove(tokenFile)
 
       Logging.fromEither(response) { data =>
         val username = "<div class=\"user\">(.+) <span class=\"star-count\">"
-          .r
-          .findFirstMatchIn(data)
+          .r.findFirstMatchIn(data)
           .map(_.group(1))
           .getOrElse("<no username found>")
         
@@ -42,6 +46,6 @@ object Auth {
   }
 
   case object Reattempt extends Action with AdventAuth {
-    def execute = Logging.fromOption(tokenValue, tokenMissingMsg)(SetSession(_).execute)
+    def execute = Logging.fromEither(tokenValue)(SetSession(_).execute)
   }
 }
