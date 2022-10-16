@@ -1,7 +1,7 @@
 package pautplugin.aoc
+import java.time.LocalDate
 import java.util.GregorianCalendar
 import java.util.TimeZone
-import java.time.LocalDate
 
 /** A trait that can be extended by Actions in order to provide easy access to the current date and year */
 trait Date {
