@@ -34,35 +34,11 @@ object Logging {
     * }}}
     * @param either the either to match
     * @param f the procedure to apply to the value of the Right object
-    * @see [[fromOption]]
     * @see [[fromBoolean]]
     */
   def fromEither[A](either: Either[String, A])(f: A => Unit) = either match {
     case Left(msg) => error(msg)
     case Right(a) => f(a)
-  }
-
-  /** Produces an effect or an error message based on an [[scala.Option]]. 
-    * - If this object is a [[scala.None]], it will print the supplied error 
-    * message. 
-    * - If this object is a [[scala.Some]], the supplied function will be 
-    * applied to the value of the Some object.
-    * 
-    * This is equivalent to:
-    * ```
-    * option match {
-    *   case None => Logging.error(msg)
-    *   case Some(x) => f(x)
-    * }
-    * ```
-    * @param option the option to match
-    * @param f the procedure to apply to the value of the Some object
-    * @see [[fromEither]]
-    * @see [[fromBoolean]]
-    */
-  def fromOption[A](option: Option[A], msg: String)(f: A => Unit) = option match {
-    case None => error(msg)
-    case Some(a) => f(a)
   }
 
   /** Produces an effect depending on the value of a boolean expression. 
@@ -77,7 +53,6 @@ object Logging {
     * @param bool the expression to check
     * @param block the procedure to run
     * @see [[fromEither]]
-    * @see [[fromOption]]
     */
   def fromBoolean(bool: Boolean, msg: String)(block: => Unit) = {
     if (bool) block
