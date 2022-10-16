@@ -1,16 +1,16 @@
 package pautplugin.aoc.plugin
 
+import pautplugin.aoc._
 import sbt.complete.DefaultParsers._
 import sbt.internal.util.complete.Parser
 import sbt.{Action => _, _}
 
 import java.time.LocalDate
 
-import pautplugin.aoc._
 import action._
 
 object Parse {
-  lazy val choose: Parser[Action] = Space ~> (settings | results | files)
+  lazy val choose: Parser[Action] = Space ~> (settings | results | files).examples("settings", "results", "files")
 
   lazy val settings = token("settings") ~> Space ~> (auth | defaultYear)
   lazy val files = token("files") ~> Space ~> (initProblem | openExample | addExample | openDataFolder)
@@ -25,7 +25,7 @@ object Parse {
   lazy val openDataFolder = token("openDataFolder") ^^^ Data.OpenFolder
 
   lazy val submit = token("submit") ~> Space ~> partDayYear map SubmitSolution.tupled
-  lazy val resultsGetAll = token("view") ^^^ Results.GetAll
+  lazy val resultsGetAll = token("viewAll") ^^^ Results.GetAll
   lazy val resultsGetOne = token("get") ~> Space ~> partDayYear map Results.GetOne.tupled
 
   lazy val nameDayYear = parseName ~ (Space ~> dayYear)
