@@ -1,5 +1,5 @@
 name := "sbt-pAut"
-ThisBuild / version := "0.1.3"
+ThisBuild / version := "0.1.4"
 
 lazy val plugin = project
   .in(file("."))
