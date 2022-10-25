@@ -3,33 +3,48 @@ package pautplugin.aoc.plugin
 import pautplugin.aoc._
 import sbt.complete.DefaultParsers._
 import sbt.internal.util.complete.Parser
-import sbt.{Action => _, _}
+import sbt.{Action => _, Doc => _, _}
 
 import java.time.LocalDate
 
 import action._
 
 object Parse {
-  lazy val choose: Parser[Action] = Space ~> (settings | results | files)
+  lazy val choose = Space ~> (help | auth | defaultYear | results | data)
 
-  lazy val settings = token("settings") ~> Space ~> (auth | defaultYear)
-  lazy val files = token("files") ~> Space ~> (initProblem | openExample | addExample | openDataFolder)
-  lazy val results = token("results") ~> Space ~> (resultsGetAll | resultsGetOne | submit)
+  lazy val help = token("help") ~> Space ~> StringBasic.examples(Doc.allDocs.keySet) map Doc.allDocs.apply
 
-  lazy val auth = token("auth") ~> Space ~> (authSet | authGet | authRetry | authReset)
-  lazy val defaultYear = token("defaultYear") ~> Space ~> (yearSet | yearGet | yearReset)
-
-  lazy val initProblem = token("initProblem") ~> Space ~> nameDayYear map InitProblemFiles.tupled
-  lazy val openExample = token("openExample") ~> Space ~> partDayYear map Data.OpenExample.tupled
+  // data
+  lazy val data = token("data") ~> Space ~> (initProblem | openExample | addExample | openFolder)
+  lazy val initProblem = token("initProblem") ~> Space ~> nameDayYear map Data.InitProblem.tupled
+  lazy val fetchManual = token("fetchManual") ~> Space ~> dayYear map Data.FetchProblemData
+  lazy val openExample = token("openExample") ~> Space ~> numDayYear map Data.OpenExample.tupled
   lazy val addExample = token("addExample") ~> Space ~> dayYear map Data.AddExample
-  lazy val openDataFolder = token("openDataFolder") ^^^ Data.OpenFolder
+  lazy val openFolder = token("openFolder") ^^^ Data.OpenFolder
 
-  lazy val submit = token("submit") ~> Space ~> partDayYear map SubmitSolution.tupled
+  // auth
+  lazy val auth = token("auth") ~> Space ~> (authSet | authGet | authRetry | authReset)
+  lazy val authSet = token("set") ~> Space ~> StringBasic.examples("") map Auth.SetSession
+  lazy val authGet = token("get") ^^^ Auth.GetSession
+  lazy val authRetry = token("retry") ^^^ Auth.Reattempt
+  lazy val authReset = token("reset") ^^^ Auth.Reset
+
+  // defaultYear
+  lazy val defaultYear = token("defaultYear") ~> Space ~> (yearSet | yearGet | yearReset)
+  lazy val yearSet = token("set") ~> Space ~> parseYear map DefaultYear.SetYear
+  lazy val yearGet = token("get") ^^^ DefaultYear.Get
+  lazy val yearReset = token("reset") ^^^ DefaultYear.Reset
+
+  // results
+  lazy val results = token("results") ~> Space ~> (resultsGetAll | resultsGetOne | submit)
+  lazy val submit = token("submit") ~> Space ~> partDayYear map Results.Submit.tupled
   lazy val resultsGetAll = token("viewAll") ^^^ Results.GetAll
   lazy val resultsGetOne = token("get") ~> Space ~> partDayYear map Results.GetOne.tupled
 
+  // helpers
   lazy val nameDayYear = parseName ~ (Space ~> dayYear)
   lazy val partDayYear = parsePart ~ (Space ~> dayYear)
+  lazy val numDayYear = NatBasic ~ (Space ~> dayYear)
   lazy val dayYear = today | explicitDayYear
 
   lazy val parseName = StringBasic.examples("\"")
@@ -40,7 +55,7 @@ object Parse {
     token("today")
       .map(_ => Date.today)
       .filter(
-        date => date.getMonthValue == 12 && Date.today.getDayOfMonth <= 25, 
+        date => date.getMonthValue == 12 && date.getDayOfMonth <= 25, 
         _ => "No problem was published today."
       )
       .map(date => Date.from(date.getDayOfMonth, Some(date.getYear)))
@@ -64,14 +79,5 @@ object Parse {
         year => s"Invalid year '$year'; choose a year between ${allYears.min} and ${allYears.max}."
       )
   }
-
-  lazy val authSet = token("set") ~> Space ~> StringBasic.examples("") map Auth.SetSession
-  lazy val authGet = token("get") ^^^ Auth.GetSession
-  lazy val authRetry = token("retry") ^^^ Auth.Reattempt
-  lazy val authReset = token("reset") ^^^ Auth.Reset
-
-  lazy val yearSet = token("set") ~> Space ~> parseYear map Year.SetDefault
-  lazy val yearGet = token("get") ^^^ Year.GetDefault
-  lazy val yearReset = token("reset") ^^^ Year.ResetDefault
 
 }

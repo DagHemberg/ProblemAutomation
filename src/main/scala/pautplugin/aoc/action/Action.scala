@@ -1,5 +1,5 @@
 package pautplugin.aoc.action
 
-trait Action {
+trait Action extends Doc {
   def execute: Unit
 }

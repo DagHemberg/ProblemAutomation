@@ -8,7 +8,7 @@ import scala.util.chaining._
 object Request {
   private val backend = HttpURLConnectionBackend()
 
-  private def requestFailedMsg(url: String) = 
+  def requestFailedMsg(url: String) = 
     s"Could not connect to $url. Make sure your authentication is correctly configured."
 
   private type ESS = Either[String, String]
@@ -21,7 +21,7 @@ object Request {
       .cookie(auth.tokenName, token)
       .headers(Map("User-Agent" -> auth.userAgent))
       .pipe(connect)
-      .pipe { connection => Try(connection.send(backend).body)
+      .pipe { connection => Try(connection.send(backend).body.left.map(_ => requestFailedMsg(url)))
         .getOrElse(Left(requestFailedMsg(url)))
       }
     }
