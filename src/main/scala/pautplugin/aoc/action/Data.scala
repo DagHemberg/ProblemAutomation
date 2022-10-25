@@ -121,7 +121,7 @@ object Data {
         |import paut.aoc.*
         |$imports
         |
-        |object Part$part extends Problem($year, $day)($part)(???):
+        |object Part$part extends Problem($day, $year)($part)(???):
         |  def name = "$name - Part $part"
         |  def solve(data: List[String]) = ???
         |""".stripMargin
