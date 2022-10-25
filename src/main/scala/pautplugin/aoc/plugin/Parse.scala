@@ -3,7 +3,7 @@ package pautplugin.aoc.plugin
 import pautplugin.aoc._
 import sbt.complete.DefaultParsers._
 import sbt.internal.util.complete.Parser
-import sbt.{Action => _, Doc => _, _}
+import sbt.{Action => _, Doc => _, Help => _, _}
 
 import java.time.LocalDate
 
@@ -12,7 +12,10 @@ import action._
 object Parse {
   lazy val choose = Space ~> (help | auth | defaultYear | results | data)
 
-  lazy val help = token("help") ~> Space ~> StringBasic.examples(Doc.allDocs.keySet) map Doc.allDocs.apply
+  lazy val help = token("help") ~> Space ~> 
+    StringBasic
+      .examples(Doc.allDocs.keySet)
+      .map(x => Help(Doc.allDocs.getOrElse(x, EmptyAction)))
 
   // data
   lazy val data = token("data") ~> Space ~> (initProblem | openExample | addExample | openFolder)
