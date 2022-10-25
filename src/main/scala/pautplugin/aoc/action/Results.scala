@@ -37,7 +37,7 @@ case object Results {
 
     def execute = Logging.fromEither(allResults) { results =>
       Logging.info(s"Found ${results.length} result${if (results.length > 1) "s" else ""}.\n")
-      println(results.mkString("\n------------------\n"))
+      println(results.mkString("\n\n"))
     }
   }
 

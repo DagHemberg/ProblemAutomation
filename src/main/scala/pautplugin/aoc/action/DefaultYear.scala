@@ -10,6 +10,9 @@ object DefaultYear {
          |
          |# USAGE
          |'aoc defaultYear get'
+         |
+         |# NOTES
+         |- When not set manually, the year defaults to the latest year with available problems, which is updated dynamically. 
          |""".stripMargin
 
     def execute = Logging.info(s"Default year: ${
@@ -26,6 +29,7 @@ object DefaultYear {
           |'aoc defaultYear set <year>'
           |
           |# NOTES
+          |- When not set manually, the year defaults to the latest year with available problems, which is updated dynamically. 
           |- <year> must be between 2015 and ${Date.availableYears.max}.
           |""".stripMargin
 
@@ -43,7 +47,7 @@ object DefaultYear {
          |'aoc defaultYear reset'
          |
          |# NOTES
-         |- 
+         |- When not set manually, the year defaults to the latest year with available problems, which is updated dynamically. 
          |""".stripMargin
 
     def execute = {
