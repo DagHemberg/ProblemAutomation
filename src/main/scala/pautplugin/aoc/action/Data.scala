@@ -32,7 +32,7 @@ object Data {
           |${Doc.today}
           |""".stripMargin
 
-    private val puzzleFile = Files.puzzles / year.toString / s"$day.txt"
+    private val puzzleFile = Files.puzzles / year.toString / s"$formattedDay.txt"
   
     def execute: Unit = {
       val response = {
@@ -94,7 +94,7 @@ object Data {
         .collect { case extract(part) => part.toInt }
       val newest = LazyList.from(1).filterNot(parts.contains).head
       val examplePath = path(newest, formattedDay, year)
-      os.write.over(examplePath, "Paste your example data here!", createFolders = true)
+      os.write.over(examplePath, "Remove this line and paste your example data here!", createFolders = true)
       os.proc("open", examplePath).call()
     }
   }
