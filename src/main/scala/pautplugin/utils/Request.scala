@@ -15,7 +15,7 @@ object Request {
   private type Session = RequestT[Empty, ESS, Any]
   private type Connection = Request[ESS, Any]
 
-  private def attempt(connect: Session => Connection, url: String)(implicit auth: Authentication) = auth
+  private def attempt(connect: Session => Connection, url: String)(implicit auth: Authentication): Either[String, String] = auth
     .tokenValue
     .flatMap { token => basicRequest
       .cookie(auth.tokenName, token)

@@ -17,7 +17,7 @@ object Files {
       val defaultYearFile = conf / "defaultyear.txt"
     val resultsFile = wd / "results.csv"
 
-  def read(path: os.Path) = if (os.exists(path)) Some(os.read(path)) else None
+  def read(path: os.Path): Option[String] = if (os.exists(path)) Some(os.read(path)) else None
 
   def username = read(usernameFile)
   def token = read(tokenFile)

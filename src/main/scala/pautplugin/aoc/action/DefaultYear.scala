@@ -6,14 +6,14 @@ import pautplugin.utils.Logging
 object DefaultYear {
   case object Get extends Action {
     val doc = 
-      """|Prints the default year.
-         |
-         |# USAGE
-         |'aoc defaultYear get'
-         |
-         |# NOTES
-         |- When not set manually, the year defaults to the latest year with available problems, which is updated dynamically. 
-         |""".stripMargin
+      s"""|Prints the default year.
+          |
+          |# USAGE
+          |'aoc defaultYear get'
+          |
+          |# NOTES
+          |${Doc.defaultYear} 
+          |""".stripMargin
 
     def execute = Logging.info(s"Default year: ${
       if (os.exists(Files.defaultYearFile)) s"${Date.defaultYear} (manual)"
@@ -29,7 +29,7 @@ object DefaultYear {
           |'aoc defaultYear set <year>'
           |
           |# NOTES
-          |- When not set manually, the year defaults to the latest year with available problems, which is updated dynamically. 
+          |${Doc.defaultYear} 
           |- <year> must be between 2015 and ${Date.availableYears.max}.
           |""".stripMargin
 
@@ -41,14 +41,14 @@ object DefaultYear {
 
   case object Reset extends Action {
     val doc = 
-      """|Resets the default year to the latest available year.
-         |
-         |# USAGE
-         |'aoc defaultYear reset'
-         |
-         |# NOTES
-         |- When not set manually, the year defaults to the latest year with available problems, which is updated dynamically. 
-         |""".stripMargin
+      s"""|Resets the default year to the latest available year.
+          |
+          |# USAGE
+          |'aoc defaultYear reset'
+          |
+          |# NOTES
+          |${Doc.defaultYear} 
+          |""".stripMargin
 
     def execute = {
       os.remove(Files.defaultYearFile)

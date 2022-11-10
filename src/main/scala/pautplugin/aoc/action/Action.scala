@@ -5,6 +5,6 @@ trait Action extends Doc {
 }
 
 object EmptyAction extends Action {
-  def execute: Unit = ()
-  val doc: String = "Command not recognized."
+  def execute = ()
+  val doc = "Command not recognized."
 }

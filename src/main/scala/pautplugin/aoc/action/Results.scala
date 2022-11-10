@@ -54,12 +54,12 @@ case object Results {
           |${Doc.dayYear}
           |""".stripMargin
 
-    def execute = Logging.fromEither(getResult)(println)
-    
     def getResult = allResults.flatMap { _
       .find(res => res.day == day && res.year == year && res.part == part)
       .toRight(left = s"No result for part $part on year $year, day $day")
     }
+
+    def execute = Logging.fromEither(getResult)(println)
   }
 
   case class Submit(part: Int, date: LocalDate) extends Action with Date with AdventAuth {

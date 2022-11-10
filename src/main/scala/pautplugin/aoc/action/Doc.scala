@@ -12,12 +12,16 @@ object Doc {
   val today = "- The 'today' keyword can only be used if a new problem was created on this day."
   val dayYear = """|- <day> must be a number between 1 and 25
                    |- [year] is optional, but defaults to the default year. For more information, see 'aoc help setYear'""".stripMargin
+  val defaultYear = 
+    "- When not set manually, the year defaults to the latest year with available problems, which is updated dynamically"
 
   val n = LocalDate.now()
 
   def apply(name: String) = allDocs(name)
 
   val allDocs: Map[String, Action] = Map(
+    "help" -> Help(EmptyAction),
+
     // auth
     "getAuth" -> Auth.GetSession,
     "setAuth" -> Auth.SetSession(""),
