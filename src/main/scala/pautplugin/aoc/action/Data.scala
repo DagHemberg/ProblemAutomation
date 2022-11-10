@@ -5,8 +5,24 @@ import pautplugin.utils._
 
 import java.time.LocalDate
 import scala.collection.compat.immutable.LazyList
+import scala.util.Try
+import scala.util.Failure
 
 object Data {
+  private def openFile(path: os.Path) = {
+    // open -> xdg-open -> $VISUAL -> $EDITOR -> "set it yourself"
+    def call(cmd: String) = os.proc(cmd, path).call()
+    lazy val env = sys.env
+
+    Try(call("open"))
+      .recoverWith { case _ => Try(call("xdg-open")) }
+      .recoverWith { case _ => Try(call(env("VISUAL"))) }
+      .recoverWith { case _ => Try(call(env("EDITOR"))) }
+      .failed.foreach(_ => Logging.error(
+        "Could not open. Make sure either 'xdg-open' is installed, or that your $VISUAL or $EDITOR environment variables are set."
+      ))
+  }
+
   case object OpenFolder extends Action {
     val doc = 
       """|Opens the ~/.paut folder, where data, settings and results are stored.
@@ -15,7 +31,9 @@ object Data {
          |'aoc data openFolder'
          |""".stripMargin
 
-    def execute: Unit = os.proc("open", Files.wd).call()
+    def execute = 
+      openFile(Files.wd)
+      // os.proc("open", Files.wd).call()
   }
 
   case class FetchProblemData(date: LocalDate) extends Action with Date with AdventAuth {  
@@ -34,7 +52,7 @@ object Data {
 
     private val puzzleFile = Files.puzzles / year.toString / s"$formattedDay.txt"
   
-    def execute: Unit = {
+    def execute = {
       val response = {
         if (os.exists(puzzleFile)) Left("Input data for this day already exists.")
         else {
@@ -67,7 +85,8 @@ object Data {
       val exists = os.exists(path(part, formattedDay, year))
       val msg = s"Example file $part from year $year, day $day does not exist"
       Logging.fromBoolean(exists, msg) {
-        os.proc("open", path(part, formattedDay, year)).call()
+        openFile(path(part, formattedDay, year))
+        // os.proc("open", path(part, formattedDay, year)).call()
       }
     }
   }
@@ -95,7 +114,8 @@ object Data {
       val newest = LazyList.from(1).filterNot(parts.contains).head
       val examplePath = path(newest, formattedDay, year)
       os.write.over(examplePath, "Remove this line and paste your example data here!", createFolders = true)
-      os.proc("open", examplePath).call()
+      openFile(examplePath)
+      // os.proc("open", examplePath).call()
     }
   }
 
