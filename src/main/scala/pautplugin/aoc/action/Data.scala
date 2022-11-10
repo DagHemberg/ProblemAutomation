@@ -9,17 +9,20 @@ import scala.util.Try
 import scala.util.Failure
 
 object Data {
-  private def openFile(path: os.Path) = {
-    // open -> xdg-open -> $VISUAL -> $EDITOR -> "set it yourself"
-    def call(cmd: String) = os.proc(cmd, path).call()
-    lazy val env = sys.env
 
-    Try(call("open"))
-      .recoverWith { case _ => Try(call("xdg-open")) }
-      .recoverWith { case _ => Try(call(env("VISUAL"))) }
-      .recoverWith { case _ => Try(call(env("EDITOR"))) }
+  private val env = sys.env
+  private def call(cmd: String, path: os.Path) = os.proc(cmd, path).call()
+  private def open(path: os.Path) = {
+
+    Try(call("open", path)).recoverWith { case _ => Try(call("xdg-open", path)) }
+  }
+
+  private def openFile(path: os.Path) = {
+    open(path)
+      .recoverWith { case _ => Try(call(env("VISUAL"), path)) }
+      .recoverWith { case _ => Try(call(env("EDITOR"), path)) }
       .failed.foreach(_ => Logging.error(
-        "Could not open. Make sure either 'xdg-open' is installed, or that your $VISUAL or $EDITOR environment variables are set."
+        s"Could not open $path. Make sure either 'xdg-open' is installed, or that your $$VISUAL or $$EDITOR environment variables are set."
       ))
   }
 
@@ -31,9 +34,13 @@ object Data {
          |'aoc data openFolder'
          |""".stripMargin
 
-    def execute = 
-      openFile(Files.wd)
+    def execute = {
+      open(Files.wd).failed.foreach(_ => Logging.error(
+        s"Could not open ${Files.wd}. Make sure 'xdg-open' is installed."
+      ))
+      // openFile(Files.wd)
       // os.proc("open", Files.wd).call()
+    }
   }
 
   case class FetchProblemData(date: LocalDate) extends Action with Date with AdventAuth {  
