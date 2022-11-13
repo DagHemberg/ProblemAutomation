@@ -8,7 +8,7 @@ object AdventOfCodePlugin extends AutoPlugin {
   override def requires = plugins.JvmPlugin
   
   object autoImport {
-    val aoc = inputKey[Unit]("")
+    val aoc = inputKey[Unit]("Performs a pAut action. See 'aoc help' for more info.")
   }
   
   import autoImport._

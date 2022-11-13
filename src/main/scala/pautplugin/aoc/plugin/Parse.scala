@@ -14,6 +14,7 @@ object Parse {
 
   lazy val help = token("help") ~> Space ~> 
     StringBasic
+      .??("help")
       .examples(Doc.allDocs.keySet)
       .map(x => Help(Doc.allDocs.getOrElse(x, EmptyAction)))
 
