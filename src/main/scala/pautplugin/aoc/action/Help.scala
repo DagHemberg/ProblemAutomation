@@ -12,16 +12,17 @@ case class Help(d: Doc) extends Action {
        |
        |'aoc data <action>'                                         Manages input data for problems
        |  'aoc data openFolder'                                     Opens the ~/.paut config folder
-       |  'aoc data initProblem "<name>" <today | <day> [year]>'    Initializes a problem
-       |  'aoc data openExample <number> <today | <day> [year]>'    Opens the example file for a problem
+       |  'aoc data fetchInput <today | <day> [year]>'             Manually fetches the input data for a problem
+       |  'aoc data openInput <today | <day [year]>'                Opens the input data for a problem
        |  'aoc data addExample <today | <day> [year]>'              Adds an example file for a problem
-       |  'aoc data fetchManual <today | <day> [year]>'             Manually fetches the input data for a problem
+       |  'aoc data openExample <number> <today | <day> [year]>'    Opens the example file for a problem
+       |  'aoc data initProblem "<name>" <today | <day> [year]>'    Initializes a problem
        |
        |'aoc auth <action>'                                         Manages the authentication token
        |  'aoc auth set <token>'                                    Sets the authentication token
        |  'aoc auth get'                                            Prints AoC username
        |  'aoc auth reset'                                          Resets the authentication token
-       |  'aoc auth reattempt'                                      Attempts to reauthenticate
+       |  'aoc auth retry'                                          Attempts to reauthenticate
        |
        |'aoc defaultYear <action>'                                  Manages the default year
        |  'aoc defaultYear set <year>'                              Sets the default year

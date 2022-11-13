@@ -12,9 +12,10 @@ object Data {
 
   private val env = sys.env
   private def call(cmd: String, path: os.Path) = os.proc(cmd, path).call()
-  private def open(path: os.Path) = {
 
-    Try(call("open", path)).recoverWith { case _ => Try(call("xdg-open", path)) }
+  private def open(path: os.Path) = {
+    Try(call("open", path))
+      .recoverWith { case _ => Try(call("xdg-open", path)) }
   }
 
   private def openFile(path: os.Path) = {
@@ -38,17 +39,15 @@ object Data {
       open(Files.wd).failed.foreach(_ => Logging.error(
         s"Could not open ${Files.wd}. Make sure 'xdg-open' is installed."
       ))
-      // openFile(Files.wd)
-      // os.proc("open", Files.wd).call()
     }
   }
 
-  case class FetchProblemData(date: LocalDate) extends Action with Date with AdventAuth {  
+  case class FetchInput(date: LocalDate) extends Action with Date with AdventAuth {  
     val doc = 
       s"""|Fetches the input data from a specific day of Advent of Code.
           |
           |# USAGE
-          |'aoc data fetchManual <today | <day> [year]>'
+          |'aoc data fetchInput <today | <day> [year]>'
           |
           |# NOTES
           |- 'aoc data initProblem' automatically runs this command, meaning this command should only be used if a problem occurs when downloading the data.
@@ -76,12 +75,12 @@ object Data {
 
   private def path(part: Int, day: String, year: Int) = Files.examples / year.toString / s"$day-$part.txt"
 
-  case class OpenExample(part: Int, date: LocalDate) extends Action with Date {
+  case class OpenInput(date: LocalDate) extends Action with Date {
     val doc = 
-      s"""|Opens the example file for a specific day of Advent of Code.
+      s"""|Opens the input file for a specific day of Advent of Code.
           |
           |# USAGE
-          |'aoc data openExample <number> <today | <day> [year]>'
+          |'aoc data openInput <today | <day> [year]>'
           |
           |# NOTES
           |${Doc.dayYear}
@@ -89,11 +88,10 @@ object Data {
           |""".stripMargin
 
     def execute = {
-      val exists = os.exists(path(part, formattedDay, year))
-      val msg = s"Example file $part from year $year, day $day does not exist"
-      Logging.fromBoolean(exists, msg) {
-        openFile(path(part, formattedDay, year))
-        // os.proc("open", path(part, formattedDay, year)).call()
+      val file = Files.puzzles / year.toString / s"$formattedDay.txt"
+      val exists = os.exists(file)
+      Logging.fromBoolean(exists, s"Example file from year $year, day $day does not exist.") { 
+        openFile(file)
       }
     }
   }
@@ -122,7 +120,27 @@ object Data {
       val examplePath = path(newest, formattedDay, year)
       os.write.over(examplePath, "Remove this line and paste your example data here!", createFolders = true)
       openFile(examplePath)
-      // os.proc("open", examplePath).call()
+    }
+  }
+
+  case class OpenExample(part: Int, date: LocalDate) extends Action with Date {
+    val doc = 
+      s"""|Opens the example file for a specific day of Advent of Code.
+          |
+          |# USAGE
+          |'aoc data openExample <number> <today | <day> [year]>'
+          |
+          |# NOTES
+          |${Doc.dayYear}
+          |${Doc.today}
+          |""".stripMargin
+
+    def execute = {
+      val exists = os.exists(path(part, formattedDay, year))
+      val msg = s"Example file $part from year $year, day $day does not exist."
+      Logging.fromBoolean(exists, msg) {
+        openFile(path(part, formattedDay, year))
+      }
     }
   }
 
@@ -189,7 +207,7 @@ object Data {
       writeProblem(1)
       writeProblem(2)
       writeTesting
-      Data.FetchProblemData(date).execute
+      Data.FetchInput(date).execute
       Data.AddExample(date).execute
     }
   }

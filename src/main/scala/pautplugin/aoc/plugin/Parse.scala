@@ -12,15 +12,17 @@ import action._
 object Parse {
   lazy val choose = Space ~> (help | auth | defaultYear | results | data)
 
-  lazy val help = token("help") ~> (Space ~> StringBasic)
-    .examples(Doc.allDocs.keySet)
+  lazy val help = token("help") ~> (Space ~> StringBasic
+    .examples(Doc.allDocs.keySet - "help"))
     .??("help")
     .map(x => Help(Doc.allDocs.getOrElse(x, EmptyAction)))
 
   // data
-  lazy val data = token("data") ~> Space ~> (initProblem | openExample | addExample | openFolder)
+  lazy val data = token("data") ~> Space ~> 
+    (initProblem | fetchInput | openExample | addExample | openFolder | openInput)
   lazy val initProblem = token("initProblem") ~> Space ~> nameDayYear map Data.InitProblem.tupled
-  lazy val fetchManual = token("fetchManual") ~> Space ~> dayYear map Data.FetchProblemData
+  lazy val openInput = token("openInput") ~> Space ~> dayYear map Data.OpenInput
+  lazy val fetchInput = token("fetchInput") ~> Space ~> dayYear map Data.FetchInput
   lazy val openExample = token("openExample") ~> Space ~> numDayYear map Data.OpenExample.tupled
   lazy val addExample = token("addExample") ~> Space ~> dayYear map Data.AddExample
   lazy val openFolder = token("openFolder") ^^^ Data.OpenFolder

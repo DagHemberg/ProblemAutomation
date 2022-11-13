@@ -39,9 +39,11 @@ object Doc {
     "submitResult" -> Results.Submit(0, n),
     
     // data
-    "initProblem" -> Data.InitProblem("", n),
-    "openExample" -> Data.OpenExample(0, n),
-    "addExample" -> Data.AddExample(n),
     "openDataFolder" -> Data.OpenFolder,
+    "fetchInput" -> Data.FetchInput(n),
+    "openInput" -> Data.OpenInput(n),
+    "addExample" -> Data.AddExample(n),
+    "openExample" -> Data.OpenExample(0, n),
+    "initProblem" -> Data.InitProblem("", n),
   )
 }
