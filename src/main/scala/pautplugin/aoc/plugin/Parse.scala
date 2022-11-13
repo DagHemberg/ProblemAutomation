@@ -12,11 +12,10 @@ import action._
 object Parse {
   lazy val choose = Space ~> (help | auth | defaultYear | results | data)
 
-  lazy val help = token("help") ~> Space ~> 
-    StringBasic
-      .??("help")
-      .examples(Doc.allDocs.keySet)
-      .map(x => Help(Doc.allDocs.getOrElse(x, EmptyAction)))
+  lazy val help = token("help") ~> (Space ~> StringBasic)
+    .examples(Doc.allDocs.keySet)
+    .??("help")
+    .map(x => Help(Doc.allDocs.getOrElse(x, EmptyAction)))
 
   // data
   lazy val data = token("data") ~> Space ~> (initProblem | openExample | addExample | openFolder)
