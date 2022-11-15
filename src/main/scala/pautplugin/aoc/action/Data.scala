@@ -47,10 +47,10 @@ object Data {
       s"""|Fetches the input data from a specific day of Advent of Code.
           |
           |# USAGE
-          |'aoc data fetchInput <today | <day> [year]>'
+          |'aoc data fetchInput <day> [year]'
           |
           |# NOTES
-          |- 'aoc data initProblem' automatically runs this command, meaning this command should only be used if a problem occurs when downloading the data.
+          |- 'aoc init' automatically runs this command, meaning this command should only be used if a problem occurs when downloading the data.
           |${Doc.auth}
           |${Doc.dayYear}
           |${Doc.today}
@@ -80,7 +80,7 @@ object Data {
       s"""|Opens the input file for a specific day of Advent of Code.
           |
           |# USAGE
-          |'aoc data openInput <today | <day> [year]>'
+          |'aoc data openInput <day> [year]'
           |
           |# NOTES
           |${Doc.dayYear}
@@ -101,7 +101,7 @@ object Data {
       s"""|Adds a new example file for a specific day of Advent of Code.
           |
           |# USAGE
-          |'aoc data addExample <today | <day> [year]>'
+          |'aoc data addExample <day> [year]'
           |
           |# NOTES
           |${Doc.dayYear}
@@ -128,7 +128,7 @@ object Data {
       s"""|Opens the example file for a specific day of Advent of Code.
           |
           |# USAGE
-          |'aoc data openExample <number> <today | <day> [year]>'
+          |'aoc data openExample <number> <day> [year]'
           |
           |# NOTES
           |${Doc.dayYear}
@@ -144,14 +144,15 @@ object Data {
     }
   }
 
-  case class InitProblem(name: String, date: LocalDate) extends Action with Date with AdventAuth {
-    val doc =       
-      s"""|Downloads and creates the files necessary to solve a specific problem from Advent of Code.
+  case class CreateFiles(name: String, date: LocalDate) extends Action with Date {
+    val doc = 
+      s"""|Creates skeleton files for solving the problems from a specific day of Advent of Code.
           |
           |# USAGE
-          |'aoc data initProblem "<name>" <today | <day> [year]>'
+          |'aoc data createFiles "<name>" <day> [year]'
           |
           |# NOTES
+          |- 'aoc init' automatically runs this command, meaning this command should only be used if a problem occurs when initializing the problem files.
           |${Doc.auth}
           |${Doc.today}
           |${Doc.dayYear}
@@ -188,10 +189,11 @@ object Data {
         |""".stripMargin
 
     private def write(file: os.Path, content: String) = {
-      val msg = s"File $file already exists, skipping..."
+      val relative = file.relativeTo(os.pwd)
+      val msg = s"File $relative already exists, skipping..."
       Logging.fromBoolean(!os.exists(file), msg) {
         os.write.over(file, content, createFolders = true)
-        Logging.info(s"Created file $file")
+        Logging.info(s"Created file $relative")
       }
     }
     
@@ -202,13 +204,11 @@ object Data {
     private def writePackage = write(folder / "package.scala", common)
     private def writeTesting = write(folder / "testing.worksheet.sc", testing)
     
-    def execute = Logging.fromEither(tokenValue) { _ =>
+    def execute = {
       writePackage
       writeProblem(1)
       writeProblem(2)
       writeTesting
-      Data.FetchInput(date).execute
-      Data.AddExample(date).execute
     }
   }
 }

@@ -10,17 +10,19 @@ import java.time.LocalDate
 import action._
 
 object Parse {
-  lazy val choose = Space ~> (help | auth | defaultYear | results | data)
+  lazy val choose = Space ~> (init | help | auth | defaultYear | results | data)
 
   lazy val help = token("help") ~> (Space ~> StringBasic
     .examples(Doc.allDocs.keySet - "help"))
     .??("help")
     .map(x => Help(Doc.allDocs.getOrElse(x, EmptyAction)))
 
+  lazy val init = token("init") ~> Space ~> nameDayYear map Init.tupled
+
   // data
   lazy val data = token("data") ~> Space ~> 
-    (initProblem | fetchInput | openExample | addExample | openFolder | openInput)
-  lazy val initProblem = token("initProblem") ~> Space ~> nameDayYear map Data.InitProblem.tupled
+    (createFiles | fetchInput | openExample | addExample | openFolder | openInput)
+  lazy val createFiles = token("createFiles") ~> Space ~> nameDayYear map Data.CreateFiles.tupled
   lazy val openInput = token("openInput") ~> Space ~> dayYear map Data.OpenInput
   lazy val fetchInput = token("fetchInput") ~> Space ~> dayYear map Data.FetchInput
   lazy val openExample = token("openExample") ~> Space ~> numDayYear map Data.OpenExample.tupled
@@ -51,11 +53,10 @@ object Parse {
   lazy val partDayYear = parsePart ~ (Space ~> dayYear)
   lazy val numDayYear = NatBasic ~ (Space ~> dayYear)
   lazy val dayYear = today | explicitDayYear
-
   lazy val parseName = StringBasic.examples("\"")
   lazy val parsePart = (token("1") | token("2")) map (_.toInt)
-
   lazy val explicitDayYear = (token(parseDay) ~ (Space ~> parseYear).?) map (Date.from _).tupled
+
   lazy val today = 
     token("today")
       .map(_ => Date.today)
@@ -84,5 +85,4 @@ object Parse {
         year => s"Invalid year '$year'; choose a year between ${allYears.min} and ${allYears.max}."
       )
   }
-
 }
