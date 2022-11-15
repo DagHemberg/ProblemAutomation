@@ -1,6 +1,16 @@
+import scala.util.Random
 import xerial.sbt.Sonatype._
 
-ThisBuild / version := "0.1.7"
+def str = Random.alphanumeric.take(5).mkString
+
+lazy val major = 0
+lazy val minor = 1
+lazy val patch = 8
+
+lazy val mainVersion = s"$major.$minor.$patch"
+def snapshotVersion = s"$major.$minor.${patch + 1}-$str-SNAPSHOT"
+
+ThisBuild / version := mainVersion
 
 versionScheme := Some("early-semver")
 organization := "io.github.daghemberg"
