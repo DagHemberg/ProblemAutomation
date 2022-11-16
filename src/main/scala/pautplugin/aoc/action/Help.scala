@@ -37,7 +37,7 @@ case class Help(d: Doc) extends Action {
         |  'aoc results submit <part> <day> [year]'        Submits the result for a specific problem
         |
         |# NOTES
-        |${Doc.today}
+        |${Doc.todayNote}
         |
         |""".stripMargin
 }

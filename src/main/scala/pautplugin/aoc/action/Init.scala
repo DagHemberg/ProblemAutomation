@@ -16,9 +16,9 @@ case class Init(name: String, date: LocalDate) extends Action with Date with Adv
         |   'aoc data createFiles "<name>" <day> [year]'
         |   'aoc data fetchInput <day> [year]'
         |   'aoc data addExample <day> [year]'
-        |${Doc.auth}
-        |${Doc.today}
-        |${Doc.dayYear}
+        |${Doc.authNote}
+        |${Doc.todayNote}
+        |${Doc.dayYearNote}
         |""".stripMargin
   def execute = Logging.fromEither(tokenValue) { _ =>
     Data.CreateFiles(name, date).execute

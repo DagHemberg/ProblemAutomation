@@ -12,7 +12,7 @@ object DefaultYear {
           |'aoc defaultYear get'
           |
           |# NOTES
-          |${Doc.defaultYear} 
+          |${Doc.defaultYearNote} 
           |""".stripMargin
 
     def execute = Logging.info(s"Default year: ${
@@ -29,7 +29,7 @@ object DefaultYear {
           |'aoc defaultYear set <year>'
           |
           |# NOTES
-          |${Doc.defaultYear} 
+          |${Doc.defaultYearNote} 
           |- <year> must be between 2015 and ${Date.availableYears.max}.
           |""".stripMargin
 
@@ -47,7 +47,7 @@ object DefaultYear {
           |'aoc defaultYear reset'
           |
           |# NOTES
-          |${Doc.defaultYear} 
+          |${Doc.defaultYearNote} 
           |""".stripMargin
 
     def execute = {

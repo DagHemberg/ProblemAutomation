@@ -7,12 +7,12 @@ trait Doc {
 }
 
 object Doc {
-  val part = "- <part> must be 1 or 2"
-  val auth = "- Requires a valid authentication token. See 'aoc help auth' for more information."
-  val today = "- You can use the 'today' keyword instead of providing day and year if a new problem was created on this day."
-  val dayYear = """|- <day> must be a number between 1 and 25
+  val partNote = "- <part> must be 1 or 2"
+  val authNote = "- Requires a valid authentication token. See 'aoc help auth' for more information."
+  val todayNote = "- You can use the 'today' keyword instead of providing day and year if a new problem was created on this day."
+  val dayYearNote = """|- <day> must be a number between 1 and 25
                    |- [year] is optional, but defaults to the default year. For more information, see 'aoc help setYear'""".stripMargin
-  val defaultYear = 
+  val defaultYearNote = 
     "- When not set manually, the year defaults to the latest year with available problems, which is updated dynamically"
 
   val n = LocalDate.now()

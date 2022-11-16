@@ -49,9 +49,9 @@ case object Results {
           |'aoc results get <part> <today | <day> [year]>'
           |
           |# NOTES
-          |${Doc.part}
-          |${Doc.today}
-          |${Doc.dayYear}
+          |${Doc.partNote}
+          |${Doc.todayNote}
+          |${Doc.dayYearNote}
           |""".stripMargin
 
     def getResult = allResults.flatMap { _
@@ -70,10 +70,10 @@ case object Results {
           |'aoc results submit <part> <today | <day> [year]>'
           |
           |# NOTES
-          |${Doc.auth}
-          |${Doc.part}
-          |${Doc.dayYear}
-          |${Doc.today}
+          |${Doc.authNote}
+          |${Doc.partNote}
+          |${Doc.dayYearNote}
+          |${Doc.todayNote}
           |""".stripMargin
 
     private val notCorrectMsg = "That's not the correct answer."
