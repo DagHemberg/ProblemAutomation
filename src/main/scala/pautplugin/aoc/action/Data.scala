@@ -3,6 +3,7 @@ package pautplugin.aoc.action
 import pautplugin.aoc._
 import pautplugin.utils._
 
+import scala.util.chaining._
 import java.time.LocalDate
 import scala.collection.compat.immutable.LazyList
 import scala.util.Try
@@ -11,21 +12,61 @@ import scala.util.Failure
 object Data {
 
   private val env = sys.env
-  private def call(cmd: String, path: os.Path) = os.proc(cmd, path).call()
-
-  private def open(path: os.Path) = {
-    Try(call("open", path))
-      .recoverWith { case _ => Try(call("xdg-open", path)) }
+  private def call(args: os.Shellable*) = Try {
+    os.proc(args: _*).call(stderr = os.Pipe)
   }
 
-  private def openFile(path: os.Path) = {
-    open(path)
-      .recoverWith { case _ => Try(call(env("VISUAL"), path)) }
-      .recoverWith { case _ => Try(call(env("EDITOR"), path)) }
-      .failed.foreach(_ => Logging.error(
-        s"Could not open $path. Make sure either 'xdg-open' is installed, or that your $$VISUAL or $$EDITOR environment variables are set."
-      ))
+  sealed trait OS
+  case object Windows extends OS
+  case object MacOS extends OS
+  case object Linux extends OS
+  case object WSL extends OS
+  case object Other extends OS
+
+  def determineOS: OS = sys.props("os.name") match {
+    case w if w.contains("Windows") => Windows
+    case "Mac OS X" => MacOS
+    case "Linux" => {
+      if (sys.env.contains("WSL_DISTRO_NAME")) WSL
+      else Linux
+    }
+    case other => Other
   }
+
+  private type TCR = Try[os.CommandResult]
+
+  private def open[A](path: os.Path, recover: TCR => TCR) = {
+    val args: Seq[os.Shellable] = Seq("-NoProfile", "-Command", "Start-Process", path)
+    determineOS match {
+      case MacOS => 
+        call("open", path)
+
+      case Windows => 
+        call("pwsh.exe", args)
+          .recoverWith { case _ => call("powershell.exe", args) }
+      
+      case Linux => 
+        call("xdg-open", path)
+          .pipe(recover)
+      
+      case WSL => 
+        call("pwsh.exe", args)
+          .recoverWith { case _ => call("powershell.exe", args) }
+          .recoverWith { case _ => call("xdg-open", path) }
+          .pipe(recover)
+      
+      case Other => {
+        Logging.error("Could not determine your operating system.")
+        Failure(new Exception)
+      }
+    }
+  }
+
+  private def openFolder(path: os.Path) = open(path, identity)
+  private def openFile(path: os.Path) = open(path, _
+    .recoverWith { case _ => call("$VISUAL", path) }
+    .recoverWith { case _ => call("$EDITOR", path) }
+  )
 
   case object OpenFolder extends Action {
     val doc = 
@@ -35,10 +76,8 @@ object Data {
          |'aoc data openFolder'
          |""".stripMargin
 
-    def execute = {
-      open(Files.wd).failed.foreach(_ => Logging.error(
-        s"Could not open ${Files.wd}. Make sure 'xdg-open' is installed."
-      ))
+    def execute = openFolder(Files.wd).failed.foreach { _ => 
+      Logging.error(s"Could not open ${Files.wd}.")
     }
   }
 
@@ -51,9 +90,9 @@ object Data {
           |
           |# NOTES
           |- 'aoc init' automatically runs this command, meaning this command should only be used if a problem occurs when downloading the data.
-          |${Doc.auth}
-          |${Doc.dayYear}
-          |${Doc.today}
+          |${Doc.authNote}
+          |${Doc.dayYearNote}
+          |${Doc.todayNote}
           |""".stripMargin
 
     private val puzzleFile = Files.puzzles / year.toString / s"$formattedDay.txt"
@@ -83,8 +122,8 @@ object Data {
           |'aoc data openInput <day> [year]'
           |
           |# NOTES
-          |${Doc.dayYear}
-          |${Doc.today}
+          |${Doc.dayYearNote}
+          |${Doc.todayNote}
           |""".stripMargin
 
     def execute = {
@@ -92,6 +131,8 @@ object Data {
       val exists = os.exists(file)
       Logging.fromBoolean(exists, s"Example file from year $year, day $day does not exist.") { 
         openFile(file)
+          .failed
+          .foreach(_ => Logging.error(s"Could not open ${file.relativeTo(os.pwd)}."))
       }
     }
   }
@@ -104,8 +145,8 @@ object Data {
           |'aoc data addExample <day> [year]'
           |
           |# NOTES
-          |${Doc.dayYear}
-          |${Doc.today}
+          |${Doc.dayYearNote}
+          |${Doc.todayNote}
           |""".stripMargin
 
     def execute = {
@@ -131,15 +172,18 @@ object Data {
           |'aoc data openExample <number> <day> [year]'
           |
           |# NOTES
-          |${Doc.dayYear}
-          |${Doc.today}
+          |${Doc.dayYearNote}
+          |${Doc.todayNote}
           |""".stripMargin
 
     def execute = {
-      val exists = os.exists(path(part, formattedDay, year))
+      val file = path(part, formattedDay, year)
+      val exists = os.exists(file)
       val msg = s"Example file $part from year $year, day $day does not exist."
       Logging.fromBoolean(exists, msg) {
-        openFile(path(part, formattedDay, year))
+        openFile(file)
+          .failed
+          .foreach(_ => Logging.error(s"Could not open ${file.relativeTo(os.pwd)}."))
       }
     }
   }
@@ -153,9 +197,9 @@ object Data {
           |
           |# NOTES
           |- 'aoc init' automatically runs this command, meaning this command should only be used if a problem occurs when initializing the problem files.
-          |${Doc.auth}
-          |${Doc.today}
-          |${Doc.dayYear}
+          |${Doc.authNote}
+          |${Doc.todayNote}
+          |${Doc.dayYearNote}
           |""".stripMargin
     
     private val aoc = os.pwd / "src" / "main" / "scala" / "aoc"
