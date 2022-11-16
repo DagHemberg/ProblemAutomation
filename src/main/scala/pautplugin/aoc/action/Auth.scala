@@ -3,10 +3,6 @@ package pautplugin.aoc.action
 import pautplugin.aoc._
 import pautplugin.utils._
 
-import scala.util.Failure
-import scala.util.Success
-import scala.util.Try
-
 import Logging._
 import Files._
 
