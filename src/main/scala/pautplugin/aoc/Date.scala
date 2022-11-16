@@ -14,7 +14,7 @@ trait Date {
 /** Companion object for Date trait. Contains useful functions for getting the current dates and available years and dates within a year. */
 object Date {  
   def from(day: Int, year: Option[Int] = None) = {
-    LocalDate.of(year.getOrElse(availableYears.max), 12, day)
+    LocalDate.of(year.getOrElse(defaultYear), 12, day)
   }
   
   def today = {
@@ -33,5 +33,8 @@ object Date {
     1 to (if (defaultYear == now.getYear && now.getMonthValue == 12) now.getDayOfMonth else 25)
   }
 
-  def defaultYear = Files.read(Files.defaultYearFile).map(_.toInt).getOrElse(today.getYear)
+  def defaultYear = Files
+    .read(Files.defaultYearFile)
+    .map(_.toInt)
+    .getOrElse(availableYears.max)
 }
