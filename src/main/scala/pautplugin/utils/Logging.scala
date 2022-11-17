@@ -34,7 +34,6 @@ object Logging {
     * }}}
     * @param either the either to match
     * @param f the procedure to apply to the value of the Right object
-    * @see [[fromBoolean]]
     */
   def fromEither[A](either: Either[String, A])(f: A => Unit) = either match {
     case Left(msg) => error(msg)
