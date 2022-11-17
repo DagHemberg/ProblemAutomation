@@ -40,22 +40,4 @@ object Logging {
     case Left(msg) => error(msg)
     case Right(a) => f(a)
   }
-
-  /** Produces an effect depending on the value of a boolean expression. 
-    * - If the expression is false, it will print the supplied error message. 
-    * - If the expression is true, the supplied block will be run.
-    * 
-    * This is equivalent to:
-    * ```
-    * if (bool) block
-    * else Logging.error(msg)
-    * ```
-    * @param bool the expression to check
-    * @param block the procedure to run
-    * @see [[fromEither]]
-    */
-  def fromBoolean(bool: Boolean, msg: String)(block: => Unit) = {
-    if (bool) block
-    else error(msg)
-  }
 }

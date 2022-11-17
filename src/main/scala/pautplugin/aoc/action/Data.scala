@@ -3,11 +3,11 @@ package pautplugin.aoc.action
 import pautplugin.aoc._
 import pautplugin.utils._
 
-import scala.util.chaining._
 import java.time.LocalDate
 import scala.collection.compat.immutable.LazyList
-import scala.util.Try
 import scala.util.Failure
+import scala.util.Try
+import scala.util.chaining._
 
 object Data {
 
@@ -35,7 +35,7 @@ object Data {
 
   private type TCR = Try[os.CommandResult]
 
-  private def open[A](path: os.Path, recover: TCR => TCR) = {
+  private def open(path: os.Path, recover: TCR => TCR) = {
     val args: Seq[os.Shellable] = Seq("-NoProfile", "-Command", "Start-Process", path)
     determineOS match {
       case MacOS => 
@@ -128,11 +128,12 @@ object Data {
 
     def execute = {
       val file = Files.puzzles / year.toString / s"$formattedDay.txt"
-      val exists = os.exists(file)
-      Logging.fromBoolean(exists, s"Example file from year $year, day $day does not exist.") { 
+      if (os.exists(file)) {
         openFile(file)
           .failed
           .foreach(_ => Logging.error(s"Could not open ${file.relativeTo(os.pwd)}."))
+      } else {
+        Logging.error(s"Input file $year, day $day does not exist.")
       }
     }
   }
@@ -178,12 +179,12 @@ object Data {
 
     def execute = {
       val file = path(part, formattedDay, year)
-      val exists = os.exists(file)
-      val msg = s"Example file $part from year $year, day $day does not exist."
-      Logging.fromBoolean(exists, msg) {
+      if (os.exists(file)) {
         openFile(file)
           .failed
           .foreach(_ => Logging.error(s"Could not open ${file.relativeTo(os.pwd)}."))
+      } else {
+        Logging.error(s"Example file $part from year $year, day $day does not exist.")
       }
     }
   }
@@ -234,10 +235,11 @@ object Data {
 
     private def write(file: os.Path, content: String) = {
       val relative = file.relativeTo(os.pwd)
-      val msg = s"File $relative already exists, skipping..."
-      Logging.fromBoolean(!os.exists(file), msg) {
+      if (!os.exists(file)) {
         os.write.over(file, content, createFolders = true)
         Logging.info(s"Created file $relative")
+      } else {
+        Logging.error(s"File $relative already exists, skipping...")
       }
     }
     
