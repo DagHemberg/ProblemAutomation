@@ -5,7 +5,7 @@ def str = Random.alphanumeric.take(5).mkString
 
 lazy val major = 0
 lazy val minor = 1
-lazy val patch = 8
+lazy val patch = 9
 
 lazy val mainVersion = s"$major.$minor.$patch"
 def snapshotVersion = s"$major.$minor.${patch + 1}-$str-SNAPSHOT"
