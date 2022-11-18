@@ -11,7 +11,6 @@ import scala.util.chaining._
 
 object Data {
 
-  private val env = sys.env
   private def call(args: os.Shellable*) = Try {
     os.proc(args: _*).call(stderr = os.Pipe)
   }
