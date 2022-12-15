@@ -41,38 +41,27 @@ object Parser {
   lazy val auth = token("auth") ~> Space ~> (authSet | authGet | authRetry | authReset)
   lazy val year = token("year") ~> Space ~> (yearSet | yearGet | yearReset)
   lazy val stats = token("stats") ~> Space ~> (statsGet | statsToggle)
-  lazy val fetch = token("fetch") ~> Space ~> parseFetch
-  lazy val init = token("init") ~> Space ~> parseInit
-  lazy val submit = token("submit") ~> Space ~> parsePartDayYear map Submit.tupled
 
-  lazy val parseFetch = parseDayAndYear map Fetch.tupled
-  lazy val parseInit = parseNameDayYear map Init.tupled
+  lazy val fetch = token("fetch") ~> Space ~> dayYear map Fetch.tupled
+  lazy val init = token("init") ~> Space ~> nameDayYear map Init.tupled
+  lazy val submit = token("submit") ~> Space ~> partDayYear map Submit.tupled
 
-  lazy val parseNameDayYear = (token(parseName) ~ parseDayYear) map flatten
-  lazy val parsePartDayYear = (token(parsePart) ~ parseDayYear) map flatten
-
-  lazy val parseDayYear = (Space ~> (parseDayAndYear | parseToday))
+  lazy val nameDayYear = (token(parseName) ~ dayYear) map flatten
+  lazy val partDayYear = (token(parsePart) ~ dayYear) map flatten
+  lazy val dayYear = Space ~> (today | explicitDayYear)
 
   lazy val parseName = StringBasic.examples("\"")
   lazy val parsePart = (token("1") | token("2")) map (_.toInt)
-  lazy val parseDayAndYear = (token(parseDay) ~ (Space ~> parseYear).?)
-  
-  lazy val parseToday: Parser[(Int, Option[Int])] = 
-  token("today")
-    .map(_ => currentDate)
-    .filter(
-      date => date.getMonthValue == 12 && date.getDayOfMonth <= 25, 
-      _ => "No problem was published today."
-    )
-    .map(date => (date.getDayOfMonth, Some(date.getYear)))
 
-  // lazy val attemptToday = {
-  //   val today = currentDate
-  //   if (today.getMonthValue == 12 && today.getDayOfMonth <= 25) success((today.getMonthValue, Some(today.getYear)))
-  //   else {
-  //     failure("No problem was posted today")
-  //   }
-  // }
+  lazy val explicitDayYear = (token(parseDay) ~ (Space ~> parseYear).?)  
+  lazy val today: Parser[(Int, Option[Int])] = 
+    token("today")
+      .map(_ => currentDate)
+      .filter(
+        date => date.getMonthValue == 12 && date.getDayOfMonth <= 25, 
+        _ => "No problem was published today."
+      )
+      .map(date => (date.getDayOfMonth, Some(date.getYear)))
 
   lazy val parseDay = {
     val days = allDays().toSet
@@ -103,5 +92,5 @@ object Parser {
   lazy val yearReset = token("reset") ^^^ Year.Reset
 
   lazy val statsGet = token("get") ^^^ Stats.Get
-  lazy val statsToggle = token("toggle") ~> Space ~> parsePartDayYear map Stats.Toggle.tupled
+  lazy val statsToggle = token("toggle") ~> Space ~> partDayYear map Stats.Toggle.tupled
 }
