@@ -36,13 +36,15 @@ object Parser {
     }
   }
 
-  lazy val choose: Parser[actions.Action] = token(Space) ~> (auth | year | stats | fetch | init | submit)
+  lazy val choose: Parser[actions.Action] = token(" ") ~> test
+
+  lazy val test = auth | year | stats | fetch | init | submit
 
   lazy val auth = token("auth") ~> Space ~> (authSet | authGet | authRetry | authReset)
   lazy val year = token("year") ~> Space ~> (yearSet | yearGet | yearReset)
   lazy val stats = token("stats") ~> Space ~> (statsGet | statsToggle)
 
-  lazy val fetch = token("fetch") ~> Space ~> token(dayYear) map Fetch.tupled
+  lazy val fetch = token("fetch") ~> Space ~> nameDayYear map Init.tupled
   lazy val init = token("init") ~> Space ~> nameDayYear map Init.tupled
   lazy val submit = token("submit") ~> Space ~> partDayYear map Submit.tupled
 
